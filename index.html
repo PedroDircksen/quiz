@@ -1,79 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quiz de Perfis Comportamentais</title>
   <style>
     :root {
-      --bg: #ffe4ec;
-      --card: #fff;
-      --accent: #ff99c8;
-      --accent-light: #ffd1e4;
-      --text: #333;
+      --bg: #fdf2f8;
+      /* fundo levemente rosado */
+      --card: #ffffff;
+      /* cartão branco */
+      --accent: #d6336c;
+      /* rosa médio */
+      --accent-light: #f8d7da;
+      /* rosa claro para hover / seleção */
+      --text: #343a40;
+      /* quase preto para contraste */
     }
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif;
-      background: var(--bg); color: var(--text);
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    input[type="radio"] {
+      accent-color: var(--accent);
+      outline: none;
+    }
+
+    input[type="radio"]:focus {
+      outline: none;
+      box-shadow: none;
     }
 
     /* Capa full-screen */
     #cover {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 0 20px;
-      background: var(--bg); z-index: 1000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+      background: var(--bg);
+      z-index: 1000;
     }
-    #cover h1 { font-size: 2.2rem; color: var(--accent); margin-bottom: 10px; }
-    #cover p  { margin: 0 0 20px; font-size: 1.1rem; }
+
+    #cover h1 {
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    #cover p {
+      margin: 0 0 20px;
+      font-size: 1.1rem;
+    }
+
     #startBtn {
-      background: var(--accent); border: none; color: #fff;
-      padding: 14px 28px; border-radius: 5px; font-size: 1.1rem;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 5px;
+      font-size: 1.1rem;
       cursor: pointer;
     }
-    #startBtn:hover { background: #ff7aa0; }
+
+    #startBtn:hover {
+      background: #c2255c;
+    }
 
     /* Quiz Container */
     #quiz-container {
-      display: none; width: 100%; max-width: 600px; margin: 40px auto;
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 40px auto;
     }
+
     form {
-      background: var(--card); padding: 20px; border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: var(--card);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    .page { display: none; }
-    fieldset { border: none; margin-bottom: 15px; padding: 0; }
-    legend { font-weight: bold; margin-bottom: 8px; }
+
+    .page {
+      display: none;
+    }
+
+    fieldset {
+      border: none;
+      margin-bottom: 15px;
+      padding: 0;
+    }
+
+    legend {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
     .options label {
-      display: block; padding: 8px 12px; margin-bottom: 6px;
-      border: 1px solid #ccc; border-radius: 5px; cursor: pointer;
+      display: block;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
       transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
-    .options label:hover { background: var(--accent-light); }
+
+    .options label:hover {
+      background: var(--accent-light);
+    }
+
     .options label:has(input:checked) {
-      background: var(--accent); border-color: var(--accent); color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
     }
-    .options input[type="radio"] { margin-right: 8px; }
+
+    .options input[type="radio"] {
+      margin-right: 8px;
+    }
+
     .navigation {
-      text-align: right; margin-top: 10px;
+      text-align: right;
+      margin-top: 10px;
     }
+
     .navigation button {
-      background: var(--accent); border: none; color: #fff;
-      padding: 8px 16px; border-radius: 5px; cursor: pointer;
-      font-size: 1rem; margin-left: 5px;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-left: 5px;
     }
-    .navigation button:hover { background: #ff7aa0; }
+
+    .navigation button:hover {
+      background: #c2255c;
+    }
 
     /* Resultado */
     #result {
-      display: none; text-align: center; margin-top: 20px;
-      background: var(--card); padding: 20px; border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      background: var(--card);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    #result h2 { color: var(--accent); margin-bottom: 10px; }
-    #profile-names { font-size: 1.2rem; margin-bottom: 20px; }
+
+    #result h2 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    #profile-names {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
 
     /* Imagens lado a lado com gap de 2% */
     #images-container {
@@ -83,40 +188,68 @@
       gap: 2%;
       margin-top: 20px;
     }
-    #images-container .img-wrapper {
+
+    .img-wrapper {
       flex: 1 1 45%;
       max-width: 350px;
       position: relative;
       cursor: pointer;
     }
+
     #images-container img {
       width: 100%;
       height: auto;
       border-radius: 10px;
       display: block;
     }
+
     .zoom-icon {
-      position: absolute; top: 8px; right: 8px;
-      background: rgba(255,255,255,0.8); border-radius: 50%; padding: 4px;
-      font-size: 1.2rem; pointer-events: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      padding: 4px;
+      font-size: 1.2rem;
+      pointer-events: none;
+      color: var(--accent);
     }
 
     /* Modal de imagem */
     #img-modal {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-      align-items: center; justify-content: center; z-index: 2000;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
     }
+
     #img-modal img {
-      max-width: 90vw; max-height: 90vh; border-radius: 10px;
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
     }
+
     #img-modal .close {
-      position: absolute; top: 20px; right: 20px;
-      background: #fff; border: none; border-radius: 50%;
-      width: 32px; height: 32px; font-size: 1.2rem; cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+      cursor: pointer;
     }
   </style>
 </head>
+
 <body>
 
   <!-- Capa -->
@@ -129,7 +262,7 @@
   <!-- Quiz e Resultado -->
   <div id="quiz-container">
     <form id="quiz">
-      <!-- Página 1 (Perguntas 1–3) -->
+      <!-- Página 1 (Perguntas 1–2) -->
       <div class="page" data-page="0">
         <fieldset>
           <legend>1. Em uma reunião, você geralmente:</legend>
@@ -143,34 +276,42 @@
         <fieldset>
           <legend>2. Em uma situação de conflito, você tende a:</legend>
           <div class="options">
-            <label><input type="radio" name="q2" value="A" required> Avaliar os fatos e buscar uma solução lógica.</label>
-            <label><input type="radio" name="q2" value="B"> Enfrentar o problema diretamente e impor sua opinião.</label>
+            <label><input type="radio" name="q2" value="A" required> Avaliar os fatos e buscar uma solução
+              lógica.</label>
+            <label><input type="radio" name="q2" value="B"> Enfrentar o problema diretamente e impor sua
+              opinião.</label>
             <label><input type="radio" name="q2" value="C"> Evitar o confronto e tentar manter a harmonia.</label>
             <label><input type="radio" name="q2" value="D"> Usar o bom humor para aliviar a tensão.</label>
           </div>
         </fieldset>
+      </div>
+
+      <!-- Página 2 (Perguntas 3–4) -->
+      <div class="page" data-page="1">
         <fieldset>
           <legend>3. O que mais te motiva no trabalho?</legend>
           <div class="options">
-            <label><input type="radio" name="q3" value="A" required> Resolver problemas com eficiência e qualidade.</label>
+            <label><input type="radio" name="q3" value="A" required> Resolver problemas com eficiência e
+              qualidade.</label>
             <label><input type="radio" name="q3" value="B"> Conquistar objetivos ambiciosos.</label>
             <label><input type="radio" name="q3" value="C"> Sentir estabilidade e segurança.</label>
             <label><input type="radio" name="q3" value="D"> Se relacionar com pessoas e se sentir reconhecido.</label>
           </div>
         </fieldset>
-      </div>
-
-      <!-- Página 2 (Perguntas 4–6) -->
-      <div class="page" data-page="1">
         <fieldset>
           <legend>4. Você se sente mais produtivo quando:</legend>
           <div class="options">
-            <label><input type="radio" name="q4" value="A" required> Está em um ambiente organizado e com regras claras.</label>
+            <label><input type="radio" name="q4" value="A" required> Está em um ambiente organizado e com regras
+              claras.</label>
             <label><input type="radio" name="q4" value="B"> Está sob pressão e com metas ousadas.</label>
             <label><input type="radio" name="q4" value="C"> Está em um ambiente calmo e previsível.</label>
             <label><input type="radio" name="q4" value="D"> Está cercado de pessoas e novidades.</label>
           </div>
         </fieldset>
+      </div>
+
+      <!-- Página 3 (Perguntas 5–6) -->
+      <div class="page" data-page="2">
         <fieldset>
           <legend>5. Como você reage sob pressão?</legend>
           <div class="options">
@@ -191,8 +332,8 @@
         </fieldset>
       </div>
 
-      <!-- Página 3 (Perguntas 7–10) -->
-      <div class="page" data-page="2">
+      <!-- Página 4 (Perguntas 7–8) -->
+      <div class="page" data-page="3">
         <fieldset>
           <legend>7. Em um trabalho em equipe, seu papel natural é:</legend>
           <div class="options">
@@ -211,6 +352,10 @@
             <label><input type="radio" name="q8" value="D"> Abraça a mudança com entusiasmo.</label>
           </div>
         </fieldset>
+      </div>
+
+      <!-- Página 5 (Perguntas 9–10) -->
+      <div class="page" data-page="4">
         <fieldset>
           <legend>9. Quando alguém precisa de ajuda, você:</legend>
           <div class="options">
@@ -224,7 +369,8 @@
           <legend>10. Quando recebe uma crítica, você:</legend>
           <div class="options">
             <label><input type="radio" name="q10" value="A" required> Reflete e busca entender o ponto técnico.</label>
-            <label><input type="radio" name="q10" value="B"> Defende seu ponto de vista e parte para o próximo desafio.</label>
+            <label><input type="radio" name="q10" value="B"> Defende seu ponto de vista e parte para o próximo
+              desafio.</label>
             <label><input type="radio" name="q10" value="C"> Se magoa, mas procura melhorar.</label>
             <label><input type="radio" name="q10" value="D"> Leva com leveza, mesmo que não concorde.</label>
           </div>
@@ -252,54 +398,60 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const cover     = document.getElementById('cover');
-      const startBtn  = document.getElementById('startBtn');
-      const quizCont  = document.getElementById('quiz-container');
-      const form      = document.getElementById('quiz');
-      const pages     = document.querySelectorAll('.page');
-      const prevBtn   = document.getElementById('prevBtn');
-      const nextBtn   = document.getElementById('nextBtn');
-      const result    = document.getElementById('result');
-      const titleEl   = document.getElementById('result-title');
-      const namesEl   = document.getElementById('profile-names');
-      const imgCont   = document.getElementById('images-container');
-      const modal     = document.getElementById('img-modal');
-      const modalImg  = modal.querySelector('img');
-      const closeBtn  = modal.querySelector('.close');
+      const cover = document.getElementById('cover');
+      const startBtn = document.getElementById('startBtn');
+      const quizCont = document.getElementById('quiz-container');
+      const form = document.getElementById('quiz');
+      const pages = document.querySelectorAll('.page');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const result = document.getElementById('result');
+      const titleEl = document.getElementById('result-title');
+      const namesEl = document.getElementById('profile-names');
+      const imgCont = document.getElementById('images-container');
+      const modal = document.getElementById('img-modal');
+      const modalImg = modal.querySelector('img');
+      const closeBtn = modal.querySelector('.close');
 
       const profiles = {
-        A: { name: 'Analista',     img: 'images/analista.jpg' },
-        B: { name: 'Executor',     img: 'images/executor.jpg' },
-        C: { name: 'Planejador',   img: 'images/planejador.jpg' },
+        A: { name: 'Analista', img: 'images/analista.jpg' },
+        B: { name: 'Executor', img: 'images/executor.jpg' },
+        C: { name: 'Planejador', img: 'images/planejador.jpg' },
         D: { name: 'Comunicativo', img: 'images/comunicativo.jpg' }
       };
 
+      let currentPage = 0;
+      function showPage(n) {
+        pages.forEach((p, i) => p.style.display = i === n ? 'block' : 'none');
+        prevBtn.style.display = n === 0 ? 'none' : 'inline-block';
+        nextBtn.textContent = n === pages.length - 1 ? 'Enviar' : 'Próxima';
+      }
+
       startBtn.addEventListener('click', () => {
-        cover.style.display    = 'none';
+        cover.style.display = 'none';
         quizCont.style.display = 'block';
         showPage(0);
       });
 
-      let currentPage = 0;
-      function showPage(n) {
-        pages.forEach((p,i) => p.style.display = i === n ? 'block' : 'none');
-        prevBtn.style.display = n === 0 ? 'none' : 'inline-block';
-        nextBtn.textContent   = n === pages.length - 1 ? 'Enviar' : 'Próxima';
-      }
-      prevBtn.addEventListener('click', () => { if (currentPage > 0) showPage(--currentPage); });
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 0) showPage(--currentPage);
+      });
+
       nextBtn.addEventListener('click', () => {
-        if (currentPage < pages.length - 1) showPage(++currentPage);
-        else form.requestSubmit();
+        if (currentPage < pages.length - 1) {
+          showPage(++currentPage);
+        } else {
+          form.requestSubmit();
+        }
       });
 
       form.addEventListener('submit', e => {
         e.preventDefault();
-        const data   = new FormData(form);
-        const tally  = { A:0, B:0, C:0, D:0 };
-        const totalQ = 10;
-        for (let i = 1; i <= totalQ; i++) tally[data.get('q'+i)]++;
-        const perc    = {};
-        Object.keys(tally).forEach(k => perc[k] = (tally[k] / totalQ) * 100);
+        const data = new FormData(form);
+        const tally = { A: 0, B: 0, C: 0, D: 0 };
+        for (let i = 1; i <= 10; i++) tally[data.get('q' + i)]++;
+        const perc = {};
+        Object.keys(tally).forEach(k => perc[k] = (tally[k] / 10) * 100);
         const maxPerc = Math.max(...Object.values(perc));
         const winners = Object.keys(perc).filter(k => perc[k] >= maxPerc - 2);
 
@@ -321,7 +473,7 @@
           imgCont.appendChild(wrap);
         });
 
-        form.style.display   = 'none';
+        form.style.display = 'none';
         result.style.display = 'block';
       });
 
@@ -330,4 +482,5 @@
     });
   </script>
 </body>
+
 </html>
