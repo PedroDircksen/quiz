@@ -5,11 +5,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quiz de Perfis Comportamentais</title>
+
   <style>
     :root {
       --bg: #fdf2f8;
       --card: #ffffff;
       --accent: #d6336c;
+      --accent-dark: #c2255c;
       --accent-light: #f8d7da;
       --text: #343a40;
     }
@@ -30,40 +32,41 @@
 
     input[type="radio"] {
       accent-color: var(--accent);
-      outline: none;
     }
 
-    input[type="radio"]:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    /* Capa full-screen */
+    /* ---------- CAPA ---------- */
     #cover {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: var(--bg);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 16px;
+      padding: 0 24px;
       text-align: center;
-      padding: 0 20px;
-      z-index: 1000;
+      z-index: 999;
     }
 
     #cover h1 {
       font-size: 2.2rem;
       color: var(--accent);
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
 
     #cover p {
-      font-size: 1.1rem;
-      margin-bottom: 20px;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+
+    .cover-input {
+      width: 100%;
+      max-width: 340px;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
     }
 
     #startBtn {
@@ -71,16 +74,16 @@
       border: none;
       color: #fff;
       padding: 14px 28px;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 1.1rem;
       cursor: pointer;
     }
 
     #startBtn:hover {
-      background: #c2255c;
+      background: var(--accent-dark);
     }
 
-    /* Quiz Container */
+    /* ---------- QUIZ ---------- */
     #quiz-container {
       display: none;
       max-width: 600px;
@@ -92,7 +95,7 @@
       background: var(--card);
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .page {
@@ -150,10 +153,10 @@
     }
 
     .navigation button:hover {
-      background: #c2255c;
+      background: var(--accent-dark);
     }
 
-    /* Resultado */
+    /* ---------- RESULTADO ---------- */
     #result {
       display: none;
       text-align: center;
@@ -161,7 +164,7 @@
       background: var(--card);
       padding: 30px 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     #result h2 {
@@ -183,14 +186,18 @@
 </head>
 
 <body>
-  <!-- Capa -->
+  <!-- ---------- CAPA ---------- -->
   <div id="cover">
     <h1>Quiz de Perfis Comportamentais</h1>
-    <p>Responda 10 perguntas e descubra seu perfil profissional!</p>
+    <p>Digite seus dados, responda 10 perguntas e descubra seu perfil profissional!</p>
+
+    <input id="userName" class="cover-input" type="text" placeholder="Seu nome" required />
+    <input id="userPhone" class="cover-input" type="tel" placeholder="Seu telefone (WhatsApp)" required />
+
     <button id="startBtn">Começar Quiz</button>
   </div>
 
-  <!-- Quiz e Resultado -->
+  <!-- ---------- QUIZ & RESULTADO ---------- -->
   <div id="quiz-container">
     <form id="quiz">
       <!-- 5 páginas, 2 perguntas cada -->
@@ -316,6 +323,7 @@
     </div>
   </div>
 
+  <!-- ---------- SCRIPT ---------- -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const cover = document.getElementById('cover');
@@ -325,9 +333,13 @@
       const pages = document.querySelectorAll('.page');
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
-      const result = document.getElementById('result');
+      const resultBox = document.getElementById('result');
       const titleEl = document.getElementById('result-title');
       const namesEl = document.getElementById('profile-names');
+      const nameInput = document.getElementById('userName');
+      const phoneInput = document.getElementById('userPhone');
+
+      const FORMSPREE_URL = 'https://formspree.io/f/xkgbjpgw';
 
       const profiles = {
         A: 'Analista',
@@ -337,18 +349,33 @@
       };
 
       let currentPage = 0;
+      let userName = '';
+      let userPhone = '';
+
       function showPage(n) {
         pages.forEach((p, i) => p.style.display = i === n ? 'block' : 'none');
         prevBtn.style.display = n === 0 ? 'none' : 'inline-block';
         nextBtn.textContent = n === pages.length - 1 ? 'Enviar' : 'Próxima';
       }
 
+      /* ---------- Iniciar Quiz ---------- */
       startBtn.addEventListener('click', () => {
+        const nameVal = nameInput.value.trim();
+        const phoneVal = phoneInput.value.trim();
+
+        if (!nameVal || !phoneVal) {
+          alert('Por favor, preencha nome e telefone.');
+          return;
+        }
+        userName = nameVal;
+        userPhone = phoneVal;
+
         cover.style.display = 'none';
         quizCont.style.display = 'block';
         showPage(0);
       });
 
+      /* ---------- Navegação ---------- */
       prevBtn.addEventListener('click', () => {
         if (currentPage > 0) showPage(--currentPage);
       });
@@ -361,21 +388,38 @@
         }
       });
 
+      /* ---------- Submissão ---------- */
       form.addEventListener('submit', e => {
         e.preventDefault();
+
         const data = new FormData(form);
         const tally = { A: 0, B: 0, C: 0, D: 0 };
+
         for (let i = 1; i <= 10; i++) {
           tally[data.get('q' + i)]++;
         }
+
         const max = Math.max(...Object.values(tally));
         const winners = Object.keys(tally).filter(k => tally[k] === max);
+        const perfilNomes = winners.map(k => profiles[k]);   // nomes completos
 
-        titleEl.textContent = winners.length > 1 ? 'Seus perfis:' : 'Seu perfil:';
-        namesEl.textContent = winners.map(k => profiles[k]).join(' e ');
+        /* ---------- Envio ao Formspree ---------- */
+        fetch(FORMSPREE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            nome: userName,
+            telefone: userPhone,
+            perfil: perfilNomes.join(', ')    // "Analista", ou "Analista, Planejador"
+          })
+        }).catch(console.error);
+
+        /* ---------- Resultado ao usuário ---------- */
+        titleEl.textContent = perfilNomes.length > 1 ? 'Seus perfis:' : 'Seu perfil:';
+        namesEl.textContent = perfilNomes.join(' e ');
 
         form.style.display = 'none';
-        result.style.display = 'block';
+        resultBox.style.display = 'block';
       });
     });
   </script>
